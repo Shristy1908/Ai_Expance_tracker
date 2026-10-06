@@ -13,7 +13,7 @@ const generateExpenseId = async () => {
 export const createExpense = async (req, res) =>{
     try{
         const expenseId = await generateExpenseId();
-        const expense = await Expense.create({ ...req.body, expenseId });
+        const expense = await Expense.create({ ...req.body, expenseId, userId: req.userId });
         res.status(201).json({
             message: "Expense created successfully",
             data: expense
@@ -29,7 +29,7 @@ export const createExpense = async (req, res) =>{
 
 export const getAllExpenses = async (req, res) => {
     try{
-        const expenses = await Expense.find();
+        const expenses = await Expense.find({ userId: req.userId });
         res.status(200).json({
             success: true,
             message: "Expenses retrieved successfully",
@@ -46,7 +46,7 @@ export const getAllExpenses = async (req, res) => {
 
 export const getExpenseById = async (req, res) => {
     try{
-        const expenses = await Expense.findOne({ expenseId: req.params.expenseId });
+        const expenses = await Expense.findOne({ expenseId: req.params.expenseId, userId: req.userId });
         if(!expenses){
             return res.status(404).json({
                 success: false,
@@ -70,7 +70,7 @@ export const getExpenseById = async (req, res) => {
 export const updateExpense = async (req, res) => {
     try{
         const expenses = await Expense.findOneAndUpdate(
-            { expenseId: req.params.expenseId },
+            { expenseId: req.params.expenseId, userId: req.userId },
             req.body,
             { new: true }
         );
