@@ -1,12 +1,22 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Counter from "../models/Counter.js";
 
 const generateToken = (user) => {
     return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
     });
 }
+
+const generateUserId = async () => {
+    const counter = await Counter.findOneAndUpdate(
+        { name: "userId" },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+    );
+    return `USR${String(counter.seq).padStart(3, "0")}`;
+};
 
 const register = async (req, res) => {
     try {
@@ -18,7 +28,9 @@ const register = async (req, res) => {
             });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
+        const userId = await generateUserId();
         const user = await User.create({
+            userId,
             name,
             email,
             password: hashedPassword,
@@ -64,6 +76,12 @@ const login = async (req, res) => {
     }
 };
 
+const logout = (req, res) => {
+    res.json({
+        message: "Logout successful",
+    });
+}
+
 const getMe = async (req, res) => {
     try {
         const user = await User.findById(req.userId).select("-password");
@@ -84,4 +102,4 @@ const getMe = async (req, res) => {
     }
 };
 
-export { register, login, getMe };
+export { register, login, logout, getMe };
