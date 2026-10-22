@@ -1,4 +1,4 @@
-function AuthLayout({ title, children }) {
+const AuthLayout = ({ title, children }) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100">
       <div className="flex w-full max-w-3xl rounded-2xl bg-white shadow-xl overflow-hidden flex-col sm:flex-row">
@@ -15,6 +15,6 @@ function AuthLayout({ title, children }) {
       </div>
     </div>
   );
-}
+};
 
 export default AuthLayout;

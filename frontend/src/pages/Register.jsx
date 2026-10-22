@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Alert from "../components/Alert.jsx";
 import AuthLayout from "../components/AuthLayout.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { getDisplayMessage } from "../utils/apiError.js";
 
-function Register() {
+const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +22,7 @@ function Register() {
       await register(name, email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(getDisplayMessage(err, "Registration failed"));
     } finally {
       setSubmitting(false);
     }
@@ -29,11 +31,7 @@ function Register() {
   return (
     <AuthLayout title="Create an account">
       <form onSubmit={handleSubmit}>
-        {error && (
-          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600">
-            {error}
-          </p>
-        )}
+        <Alert className="mb-4">{error}</Alert>
         <div className="mb-4 flex flex-col gap-1.5 text-left">
           <label htmlFor="name" className="text-sm font-semibold text-gray-500">
             Name
@@ -89,6 +87,6 @@ function Register() {
       </p>
     </AuthLayout>
   );
-}
+};
 
 export default Register;

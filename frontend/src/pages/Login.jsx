@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Alert from "../components/Alert.jsx";
 import AuthLayout from "../components/AuthLayout.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { getDisplayMessage } from "../utils/apiError.js";
 
-function Login() {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +21,7 @@ function Login() {
       await login(email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(getDisplayMessage(err, "Login failed"));
     } finally {
       setSubmitting(false);
     }
@@ -28,11 +30,7 @@ function Login() {
   return (
     <AuthLayout title="Log in">
       <form onSubmit={handleSubmit}>
-        {error && (
-          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600">
-            {error}
-          </p>
-        )}
+        <Alert className="mb-4">{error}</Alert>
         <div className="mb-4 flex flex-col gap-1.5 text-left">
           <label htmlFor="email" className="text-sm font-semibold text-gray-500">
             Email address
@@ -74,6 +72,6 @@ function Login() {
       </p>
     </AuthLayout>
   );
-}
+};
 
 export default Login;
